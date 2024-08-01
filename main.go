@@ -20,14 +20,15 @@ func handleClient(client net.Conn, target string) {
 		log.Printf("Error connecting to target: %v", err)
 		return
 	}
-	defer server.Close()
 
+	defer server.Close()
 	go func() {
 		if _, err := io.Copy(server, client); err != nil {
 			log.Printf("Error copying data from client to server: %v", err)
 		}
+		go func() { fmt.Println("server", client.RemoteAddr()) }()
 	}()
-
+	go func() { fmt.Println("client", client.RemoteAddr()) }()
 	if _, err := io.Copy(client, server); err != nil {
 		log.Printf("Error copying data from server to client: %v", err)
 	}
